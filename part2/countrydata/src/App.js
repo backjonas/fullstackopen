@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Filter from './components/Filter'
-import CountryList from './components/CountryList'
+import FilteredCountries from './components/FilteredCountries'
 import Country from './components/Country'
 
 const App = () => {
@@ -9,8 +9,9 @@ const App = () => {
   const [currentFilter, setCurrentFilter] = useState('')
 
   const fetchCountries = () => {
-    axios.get('https://restcountries.com/v3.1/all').then(response => {
-      console.log(response)
+    axios
+    .get('https://restcountries.com/v3.1/all')
+    .then(response => {
       setCountries(response.data)
     })
   }
@@ -27,7 +28,7 @@ const App = () => {
         currentFilter={currentFilter} 
         handleFilterChange={handleFilterChange}
       />
-      <CountryList 
+      <FilteredCountries 
         countries={countries}
         currentFilter={currentFilter}
       />

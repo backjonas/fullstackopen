@@ -1,29 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Country from './Country'
 
-const CountryList = ({countries, currentFilter}) => {
-  const regexp = new RegExp(currentFilter, 'i')
-  const matchingCountries = countries.filter(country => {    
-    return regexp.test(country.name.common)
-  })
+const CountryElement = ({country}) => {
+  const [showFull, setShowFull] = useState(false)
 
-  if (matchingCountries.length > 10) {
-    return <p>Too many matches, specify another filter</p>
-  } else if (matchingCountries.length > 1) {
-    return (
-      <div>
-        {matchingCountries.map(country => 
-          <p key={country.ccn3}>{country.name.common}</p>
-        )}
-      </div>
-    )
-  } else if (matchingCountries.length === 1) {
-    return <Country country={matchingCountries[0]}/>
-  } else {
-    return (
-      <p>No countries found matching the filter</p>
-    )
+  const showCountry = () => {
+    if (showFull) {
+      return <Country country={country} />
+    }
   }
+  
+  return (
+    <div>
+      {country.name.common}
+      <button onClick={() => setShowFull(!showFull)}>
+        {showFull ? 'hide' : 'show'}
+      </button>
+      {showCountry()}
+    </div>
+  )
+}
+
+const CountryList = ({countries}) => {
+  return (
+    <div>
+      {countries.map(country => 
+        <CountryElement key={country.ccn3} country={country}/>
+      )}
+    </div>
+  )
 }
 
 export default CountryList

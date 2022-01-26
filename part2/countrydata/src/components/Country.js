@@ -1,4 +1,5 @@
 import React from 'react'
+import WeatherData from './WeatherData'
 
 const Country = ({country}) => {
   return (
@@ -13,6 +14,7 @@ const Country = ({country}) => {
         }
       </ul>
       <h1>{country.flag}</h1>
+      <WeatherData country={country} />
     </div>
   )
 }
