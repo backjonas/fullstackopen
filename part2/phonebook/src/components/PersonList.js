@@ -1,12 +1,15 @@
 import React from 'react'
 
-const Person = ({person}) => {
+const Person = ({person, removePerson}) => {
   return (
-    <li>{person.name} {person.number}</li>
+    <li>
+      {person.name} {person.number}
+      <button onClick={removePerson}>delete</button>
+    </li>
   )
 }
 
-const PersonList = ({people, currentFilter}) => {
+const PersonList = ({people, currentFilter, removePerson}) => {
   const regexp = new RegExp(currentFilter, 'i')
   const peopleToShow = people.filter(person => 
                        regexp.test(person.name))
@@ -14,7 +17,11 @@ const PersonList = ({people, currentFilter}) => {
     return (
       <ul> 
         {peopleToShow.map(person => 
-          <Person key={person.name} person={person} />
+          <Person 
+          key={person.name} 
+          person={person}
+          removePerson={() => removePerson(person)}
+          />
         )}
       </ul>
     )
