@@ -4,21 +4,31 @@ import PersonForm from './components/PersonForm'
 import PersonList from './components/PersonList'
 import Filter from './components/Filter'
 import requestService from './services/requests'
+import Notification from './components/Notification'
 
 const App = () => {
   const [people, setPeople] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [currentFilter, setCurrentFilter] = useState('')
+  const [currentMessage, setCurrentMessage] = useState({content: null, type: ''})
+
 
   const initialPeopleHook = () => {
     requestService.getAll().then(returnedPeople => {
-      console.log(returnedPeople)
       setPeople(returnedPeople)
     })
   }
 
   useEffect(initialPeopleHook, [])
+
+  const showNotification = (message) => {
+    setCurrentMessage(message)
+    setTimeout(() => {          
+      setCurrentMessage({content: null, type: null})        
+    }, 5000)
+
+  }
 
   const updatePerson = (oldPerson, newPerson) => {
     if (window.confirm(`${newName} is already in the phonebook, replace the old number with a new one?`)) {
@@ -29,6 +39,19 @@ const App = () => {
           ))
           setNewName('')
           setNewNumber('')
+          showNotification({
+            content: `The number for ${returnedPerson.name} was updated`,
+            type: 'success'
+          })        
+        })
+        .catch(() => {
+          setNewName('')
+          setNewNumber('')
+          setPeople(people.filter(person => person.name !== oldPerson.name))
+          showNotification({
+            content: `The number for ${oldPerson.name} has already been removed from the server`,
+            type: 'error'
+          })
         })
     }
   }
@@ -47,6 +70,10 @@ const App = () => {
           setPeople(people.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          showNotification({
+            content: `${returnedPerson.name} was added to the phonebook`,
+            type: 'success'
+          })
         })
     }
   }
@@ -70,14 +97,25 @@ const App = () => {
         .remove(person.id)
         .then(response => {
           setPeople(people.filter(object => object.id !== person.id))
-      })
-
+          showNotification({
+            content: `The number for ${person.name} has been removed from the server`,
+            type: 'success'
+          })
+        })
+        .catch(() => {
+          setPeople(people.filter(object => object.id !== person.id))
+          showNotification({
+            content: `The number for ${person.name} has already been removed from the server`,
+            type: 'error'
+          })
+        })
     }
   }
 
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={currentMessage} />
       <Filter 
         currentFilter={currentFilter} 
         handleFilterChange={handleFilterChange}
