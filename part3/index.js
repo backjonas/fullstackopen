@@ -1,9 +1,12 @@
-const { request, response } = require('express');
 const express = require('express');
-const res = require('express/lib/response');
+const morgan = require('morgan');
+
 const app = express();
 
 app.use(express.json());
+
+morgan.token('body', (req, res) => JSON.stringify(req.body));
+app.use(morgan(':method :url :status :res[content-length] :response-time ms :body'));
 
 let persons = [
   { 
@@ -41,7 +44,6 @@ app.get('/api/persons/:id', (request, response) => {
     response.status(404).end();
   }
 })
-
 
 app.get('/info', (request, response) => {
   response.send(  
