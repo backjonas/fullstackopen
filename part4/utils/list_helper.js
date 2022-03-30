@@ -1,4 +1,4 @@
-const { reduce } = require('lodash');
+//const { reduce } = require('lodash');
 const _ = require('lodash');
 const totalLikes = (blogs) => {
   return blogs.reduce((a, b) => a + b.likes, 0);
@@ -42,7 +42,6 @@ const mostLikes = (blogs) => {
     likes: _(authorBlogs).sumBy('likes')
   })).value();
 
-  console.log(authorLikes);
   return _(authorLikes).maxBy('likes');
 
 };

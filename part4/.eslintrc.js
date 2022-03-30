@@ -18,10 +18,10 @@ module.exports = {
       'error',
       'unix'
     ],
-    'semi': [
-      'error',
-      'always'
-    ],
+    // 'semi': [
+    //   'error',
+    //   'always'
+    // ],
     'eqeqeq': 'error',
     'no-trailing-spaces': 'error',
     'object-curly-spacing': [

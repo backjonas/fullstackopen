@@ -1,12 +1,12 @@
 const config = require('./utils/config')
 const express = require('express')
 const app = express()
+require('express-async-errors')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const blogRouter = require('./routers/blogs')
 const logger = require('./utils/logger')
 
-logger.info('connecting to', config.MONGODB_URI)
 
 mongoose.connect(config.MONGODB_URI)
   .then(() => {
