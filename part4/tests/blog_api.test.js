@@ -4,10 +4,28 @@ const helper = require('./test_helper')
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+const getAuth = async () => {
+  const res = await api
+    .post('/api/login')
+    .send({
+      username: helper.testUser.username,
+      password: helper.testUser.password
+    });
+  return `bearer ${res.body.token}`
+}
 
 beforeEach(async () => {
+  await User.deleteMany({})
+  const user = await api
+    .post('/api/users')
+    .send(helper.testUser)
+
+  const blogsWithUser = helper.listWithManyBlogs
+    .map(blog => ({ ...blog, user: user.body.id }))
   await Blog.deleteMany({})
-  await Blog.insertMany(helper.listWithManyBlogs)
+  await Blog.insertMany(blogsWithUser)
 })
 
 test('blogs are returned as json', async () => {
@@ -33,13 +51,15 @@ test('the unique identifier is id', async () => {
 
 test('blogs can be created', async () => {
   const initialBlogs = await helper.blogsInDb()
+  const auth = await getAuth()
   await api
     .post('/api/blogs')
+    .set('Authorization', auth)
     .send({
       title: "Title1",
       author: "Author1",
       url: "Url1",
-      likes: 1
+      likes: 1,
     })
   const blogsAtEnd = await helper.blogsInDb()
   expect(blogsAtEnd).toHaveLength(initialBlogs.length + 1)
@@ -47,8 +67,10 @@ test('blogs can be created', async () => {
 })
 
 test('likes for a blog will default to 0', async () => {
+  const auth = await getAuth()
   const createdBlog = await api
     .post('/api/blogs')
+    .set('Authorization', auth)
     .send({
       title: 'Title2',
       author: 'Author2',
@@ -58,8 +80,10 @@ test('likes for a blog will default to 0', async () => {
 })
 
 test('creating a blog without title fails', async () => {
+  const auth = await getAuth()
   await api
     .post('/api/blogs')
+    .set('Authorization', auth)
     .send({
       author: 'Author3',
       url: 'Url3',
@@ -69,8 +93,10 @@ test('creating a blog without title fails', async () => {
 })
 
 test('creating a blog without url fails', async () => {
+  const auth = await getAuth()
   await api
     .post('/api/blogs')
+    .set('Authorization', auth)
     .send({
       title: 'Title4',
       author: 'Author4',
@@ -79,12 +105,26 @@ test('creating a blog without url fails', async () => {
     .expect(400)
 })
 
+test('creating a blog without token fails', async () => {
+  await api
+    .post('/api/blogs')
+    .send({
+      title: "Title1",
+      author: "Author1",
+      url: "Url1",
+      likes: 1,
+    })
+    .expect(401)
+})
+
 describe('deleting a blog', () => {
   test('succeeds with code 204 if id is valid', async () => {
     const initialBlogs = await helper.blogsInDb()
+    const auth = await getAuth()
     const id = initialBlogs[0].id
     await api
       .delete(`/api/blogs/${id}`)
+      .set('Authorization', auth)
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
