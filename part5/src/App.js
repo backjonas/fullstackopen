@@ -1,17 +1,13 @@
-import axios from 'axios'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [formData, setFormData] = useState({
-    title: '',
-    author: '',
-    url: ''
-  })
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -42,19 +38,13 @@ const App = () => {
     }, 5000)
   }
 
-  const handleFormChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value
-    })
-  }
+  const blogFormRef = useRef()
 
-  const handleCreateBlog = async (event) => {
-    event.preventDefault()
-
+  const addBlog = async (formData) => {
     try {
       const response = await blogService.create(formData)
       setBlogs(await blogService.getAll())
+      blogFormRef.current.toggleVisibility()
       showNotification({
         content: `Added a new blog: ${response.title} by ${response.author}`,
         type: 'success'
@@ -65,7 +55,6 @@ const App = () => {
         type: 'error'
       })        
     }
-    setFormData({title: '', author: '', url: ''})
   }
 
   const handleLogin = async (event) => {
@@ -129,38 +118,13 @@ const App = () => {
     </form>      
   )
 
-  const blogForm = () => (
-    <form onSubmit={handleCreateBlog}>
-        <div>
-          title
-          <input
-          type="text"
-          value={formData.title}
-          name="title"
-          onChange={handleFormChange}
-        />
-      </div>
-      <div>
-        author
-        <input
-          type="text"
-          value={formData.author}
-          name="author"
-          onChange={handleFormChange}
-        />
-      </div>
-      <div>
-        url
-        <input
-          type="text"
-          value={formData.url}
-          name="url"
-          onChange={handleFormChange}
-        />
-      </div>
-      <button type="submit">create</button>
-    </form>
-  )
+  const blogForm = () => {
+    return (
+      <Togglable buttonLabel='new note' ref={blogFormRef}>
+        <BlogForm createBlog={addBlog} />
+      </Togglable>
+    )
+  }
 
   if (user === null) {
     return (
