@@ -18,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
     )  
   }, [])
 
@@ -52,6 +52,21 @@ const App = () => {
     } catch (exception) {
       showNotification({
         content: `The blog could not be added`,
+        type: 'error'
+      })        
+    }
+  }
+
+  const likeBlog = async (blog) => {
+    try {  
+      const response = await blogService.update({
+        ...blog, 
+        ['likes']: blog.likes + 1
+      })
+      setBlogs(await blogService.getAll())
+    } catch (exception) {
+      showNotification({
+        content: `Failed to update blog`,
         type: 'error'
       })        
     }
@@ -120,7 +135,11 @@ const App = () => {
 
   const blogForm = () => {
     return (
-      <Togglable buttonLabel='new note' ref={blogFormRef}>
+      <Togglable 
+        buttonLabel='create new blog'
+        ref={blogFormRef}
+        hideLabel='cancel'
+      >
         <BlogForm createBlog={addBlog} />
       </Togglable>
     )
@@ -140,11 +159,17 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification message={currentMessage} />
-      <p>{user.name} logged in</p>
+      <p>
+        {user.name} logged in
+        <button onClick={handleLogout}>logout</button> 
+      </p>
       {blogForm()}
-      <p><button onClick={handleLogout}>logout</button></p>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog 
+          key={blog.id} 
+          blog={blog} 
+          likeBlog={() => likeBlog(blog)}
+        />
       )}
     </div>
   )
