@@ -8,18 +8,18 @@ import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [currentMessage, setCurrentMessage] = useState({
-    content: null, 
+    content: null,
     type: ''
   })
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs.sort((a, b) => b.likes - a.likes))
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -33,8 +33,8 @@ const App = () => {
 
   const showNotification = (message) => {
     setCurrentMessage(message)
-    setTimeout(() => {          
-      setCurrentMessage({content: null, type: null})        
+    setTimeout(() => {
+      setCurrentMessage({ content: null, type: null })
     }, 5000)
   }
 
@@ -48,19 +48,19 @@ const App = () => {
       showNotification({
         content: `Added a new blog: ${response.title} by ${response.author}`,
         type: 'success'
-      })        
+      })
     } catch (exception) {
       showNotification({
         content: `The blog could not be added`,
         type: 'error'
-      })        
+      })
     }
   }
 
   const likeBlog = async (blog) => {
-    try {  
+    try {
       await blogService.update({
-        ...blog, 
+        ...blog,
         ['likes']: blog.likes + 1
       })
       setBlogs(await blogService.getAll())
@@ -68,7 +68,7 @@ const App = () => {
       showNotification({
         content: `Failed to update blog`,
         type: 'error'
-      })        
+      })
     }
   }
 
@@ -80,7 +80,7 @@ const App = () => {
         showNotification({
           content: `Removed blog ${blog.title}`,
           type: 'success'
-        })  
+        })
       }
     } catch (exception) {
       console.log(exception)
@@ -93,7 +93,7 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password
@@ -109,14 +109,14 @@ const App = () => {
       showNotification({
         content: `Logged in as ${user.name}`,
         type: 'success'
-      })        
+      })
 
     } catch (exception) {
       showNotification({
         content: `Wrong credentials`,
         type: 'error'
-      })        
-}
+      })
+    }
   }
 
   const handleLogout = event => {
@@ -132,7 +132,7 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -141,7 +141,7 @@ const App = () => {
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -149,12 +149,12 @@ const App = () => {
         />
       </div>
       <button type="submit">login</button>
-    </form>      
+    </form>
   )
 
   const blogForm = () => {
     return (
-      <Togglable 
+      <Togglable
         buttonLabel='create new blog'
         ref={blogFormRef}
         hideLabel='cancel'
@@ -180,13 +180,13 @@ const App = () => {
       <Notification message={currentMessage} />
       <p>
         {user.name} logged in
-        <button onClick={handleLogout}>logout</button> 
+        <button onClick={handleLogout}>logout</button>
       </p>
       {blogForm()}
       {blogs.map(blog =>
-        <Blog 
-          key={blog.id} 
-          blog={blog} 
+        <Blog
+          key={blog.id}
+          blog={blog}
           likeBlog={() => likeBlog(blog)}
           removeBlog={() => removeBlog(blog)}
           user={user}
