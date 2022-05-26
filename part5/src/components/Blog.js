@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 
-const Blog = ({blog, likeBlog}) => {
+const Blog = ({blog, likeBlog, removeBlog, user}) => {
   const [visible, setVisible] = useState(false)
  
   const toggleVisibility = () => {
@@ -14,6 +14,19 @@ const Blog = ({blog, likeBlog}) => {
     </button>
   )
 
+  const removeButton = () => {
+    if (blog.user && user.username === blog.user.username) {
+      return (
+        <>
+        <br/>
+        <button onClick={removeBlog}>
+          remove
+        </button>
+        </>
+      )
+    }
+  }
+
   const blogInformation = () => (
     <>
       <br/>
@@ -25,6 +38,7 @@ const Blog = ({blog, likeBlog}) => {
       </button>
       <br/>
       {blog.user  ? blog.user.name : 'no user found' }
+      {removeButton()}
     </>
   )
 

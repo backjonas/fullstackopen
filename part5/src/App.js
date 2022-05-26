@@ -59,7 +59,7 @@ const App = () => {
 
   const likeBlog = async (blog) => {
     try {  
-      const response = await blogService.update({
+      await blogService.update({
         ...blog, 
         ['likes']: blog.likes + 1
       })
@@ -69,6 +69,25 @@ const App = () => {
         content: `Failed to update blog`,
         type: 'error'
       })        
+    }
+  }
+
+  const removeBlog = async (blog) => {
+    try {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+        await blogService.remove(blog)
+        setBlogs(await blogService.getAll())
+        showNotification({
+          content: `Removed blog ${blog.title}`,
+          type: 'success'
+        })  
+      }
+    } catch (exception) {
+      console.log(exception)
+      showNotification({
+        content: `Failed to remove blog`,
+        type: 'error'
+      })
     }
   }
 
@@ -169,6 +188,8 @@ const App = () => {
           key={blog.id} 
           blog={blog} 
           likeBlog={() => likeBlog(blog)}
+          removeBlog={() => removeBlog(blog)}
+          user={user}
         />
       )}
     </div>
