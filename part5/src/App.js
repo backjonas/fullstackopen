@@ -16,10 +16,13 @@ const App = () => {
     type: ''
   })
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
-    )
+  const setNewBlogs = async () => {
+    const blogs = await blogService.getAll()
+    setBlogs(blogs.sort((a, b) => b.likes - a.likes))
+  }
+
+  useEffect(async () => {
+    await setNewBlogs()
   }, [])
 
   useEffect(() => {
@@ -43,7 +46,7 @@ const App = () => {
   const addBlog = async (formData) => {
     try {
       const response = await blogService.create(formData)
-      setBlogs(await blogService.getAll())
+      await setNewBlogs()
       blogFormRef.current.toggleVisibility()
       showNotification({
         content: `Added a new blog: ${response.title} by ${response.author}`,
@@ -63,7 +66,7 @@ const App = () => {
         ...blog,
         ['likes']: blog.likes + 1
       })
-      setBlogs(await blogService.getAll())
+      await setNewBlogs()
     } catch (exception) {
       showNotification({
         content: `Failed to update blog`,
@@ -76,7 +79,7 @@ const App = () => {
     try {
       if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
         await blogService.remove(blog)
-        setBlogs(await blogService.getAll())
+        await setNewBlogs()
         showNotification({
           content: `Removed blog ${blog.title}`,
           type: 'success'
