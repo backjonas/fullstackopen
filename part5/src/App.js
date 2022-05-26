@@ -64,7 +64,7 @@ const App = () => {
     try {
       await blogService.update({
         ...blog,
-        ['likes']: blog.likes + 1
+        likes: blog.likes + 1
       })
       await setNewBlogs()
     } catch (exception) {
