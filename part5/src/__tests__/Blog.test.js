@@ -6,11 +6,13 @@ import Blog from '../components/Blog'
 
 describe('<Blog />', () => {
   let container
+  let mockLikeBlog
+  let mockRemoveBlog
 
   beforeEach(() => {
     const user = {
       id: "userid123",
-      name: "name",
+      name: "some name",
       username: "username"
     }
   
@@ -23,8 +25,8 @@ describe('<Blog />', () => {
       id: "blogid123"
     }
     
-    const mockLikeBlog = jest.fn()
-    const mockRemoveBlog = jest.fn()
+    mockLikeBlog = jest.fn()
+    mockRemoveBlog = jest.fn()
 
     container = render(
       <Blog
@@ -44,40 +46,36 @@ describe('<Blog />', () => {
     expect(div).toHaveTextContent('blogAuthor')
     expect(div).not.toHaveTextContent('blogUrl')
     expect(div).not.toHaveTextContent('likes')
+    expect(div).not.toHaveTextContent('some name')
   })
 
+  test('renders all information after clicking \"view\"', async () => {
+    const button = screen.getByText('view')
+    const user = userEvent.setup()
+    await user.click(button)
 
-  
+    const div = container.querySelector('.blog')
+
+    expect(div).toHaveTextContent('blogTitle')
+    expect(div).toHaveTextContent('blogAuthor')
+    expect(div).toHaveTextContent('blogUrl')
+    expect(div).toHaveTextContent('likes 1')
+    expect(div).toHaveTextContent('some name')
+  })
+
+  test('calls the event handler when clicking \"like\"', async () => {
+    expect(mockLikeBlog.mock.calls).toHaveLength(0)
+
+    const user = userEvent.setup()
+    const viewButton = screen.getByText('view')
+    await user.click(viewButton)
+
+    const likeButton = screen.getByText('like')
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    expect(mockLikeBlog.mock.calls).toHaveLength(2)
+  })
 
 })
 
-// test('clicking the button calls event handler once', async () => {
-//   const note = {
-//     content: 'Component testing is done with react-testing-library',
-//     important: true
-//   }
-
-//   const mockHandler = jest.fn()
-
-//   render(
-//     <Note note={note} toggleImportance={mockHandler} />
-//   )
-
-//   const user = userEvent.setup()
-//   const button = screen.getByText('make not important')
-//   await user.click(button)
-
-//   expect(mockHandler.mock.calls).toHaveLength(1)
-// })
-
-// test('does not render this', () => {
-//   const note = {
-//     content: 'This is a reminder',
-//     important: true
-//   }
-
-//   render(<Note note={note} />)
-
-//   const element = screen.queryByText('do not want this thing to be rendered')
-//   expect(element).toBeNull()
-// })
