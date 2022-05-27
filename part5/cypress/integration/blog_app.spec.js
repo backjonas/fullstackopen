@@ -64,21 +64,45 @@ describe('Blog app', function() {
         })
       })
 
-      it.only('a blog can be liked', function() {
+      it('a blog can be liked', function() {
         cy.contains('blog title').parent().as('blog')
         cy.get('@blog').contains('view').click()
         cy.get('@blog').contains('like').click()
         cy.get('@blog').should('contain', 'likes 1')
       })
 
-      it.only('a blog can be deleted by its creator', function() {
+      it('a blog can be deleted by its creator', function() {
         cy.contains('blog title').parent().as('blog')
         cy.contains('blog author').should('exist')
         cy.get('@blog').contains('view').click()
         cy.get('@blog').contains('remove').click()
         cy.contains('blog author').should('not.exist')
       })
+    })
 
+    it('blogs will be ordered by number of likes', function () {
+      cy.createBlog({
+        title: 'first title',
+        author: 'first author',
+        url: 'first url',
+        likes: 1
+      })
+      cy.createBlog({
+        title: 'second title',
+        author: 'second author',
+        url: 'second url',
+        likes: 5
+      })
+      cy.createBlog({
+        title: 'third title',
+        author: 'third author',
+        url: 'third url',
+        likes: 0
+      })
+
+      cy.get('.blog').eq(0).should('contain', 'second title')
+      cy.get('.blog').eq(1).should('contain', 'first title')
+      cy.get('.blog').eq(2).should('contain', 'third title')
     })
   })
 })
