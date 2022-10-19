@@ -4,14 +4,10 @@ import anecdoteReducer from './reducers/anecdoteReducer'
 import filterReducer from './reducers/filterReducer'
 import notificationReducer from './reducers/notificationReducer'
 
-const CreateStore = () => {
-  return configureStore({
-    reducer: {
-      anecdotes: anecdoteReducer,
-      notification: notificationReducer,
-      filter: filterReducer
-    }
-  })
-} 
-
-export default CreateStore
+export const store = configureStore({
+  reducer: {
+    anecdotes: anecdoteReducer,
+    notification: notificationReducer,
+    filter: filterReducer
+  }
+})
