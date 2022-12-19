@@ -2,12 +2,12 @@
   "anecdotes": [
     {
       "content": "If it hurts, do it more often",
-      "votes": 19,
+      "votes": 48,
       "id": "47145"
     },
     {
       "content": "Adding manpower to a late software project makes it later!",
-      "votes": 12,
+      "votes": 18,
       "id": "21149"
     },
     {
@@ -124,6 +124,96 @@
       "content": "",
       "votes": 0,
       "id": "KH_fwMb"
+    },
+    {
+      "content": "af",
+      "votes": 0,
+      "id": "gW9j3Cq"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "unmrS_X"
+    },
+    {
+      "content": "aaaaaaaaaa",
+      "votes": 0,
+      "id": "eci52fV"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "RB-dD4z"
+    },
+    {
+      "content": "sss",
+      "votes": 0,
+      "id": "8XyPwGf"
+    },
+    {
+      "content": "efssfes",
+      "votes": 0,
+      "id": "F18nlXA"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "fALgbQ7"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "viM0bjF"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "JlZc9zs"
+    },
+    {
+      "content": "sss",
+      "votes": 0,
+      "id": "XXKdWtY"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "y8Mo3c7"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "rR5hARj"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "yLeLUVY"
+    },
+    {
+      "content": "sss",
+      "votes": 0,
+      "id": "pUZSSW7"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "PWNcUkN"
+    },
+    {
+      "content": "",
+      "votes": 0,
+      "id": "niz_XLJ"
+    },
+    {
+      "content": "sss",
+      "votes": 0,
+      "id": "wUXW2Q1"
+    },
+    {
+      "content": "cc",
+      "votes": 0,
+      "id": "s0Hu-ze"
     }
   ]
 }
