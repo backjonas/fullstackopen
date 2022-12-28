@@ -31,7 +31,6 @@ mutation addBook($title: String!, $published: Int!, $author: String!, $genres: [
   ) {
     title
     published
-    author
     genres
   }
 }
