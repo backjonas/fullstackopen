@@ -1,15 +1,36 @@
-import { useQuery, useLazyQuery } from '@apollo/client'
+import { useQuery, useLazyQuery, useSubscription, useApolloClient } from '@apollo/client'
 import { useState } from 'react'
 
-import { ALL_BOOKS, ALL_GENRES } from '../queries'
+import { ALL_BOOKS, BOOK_ADDED } from '../queries'
+import { updateBookCache } from '../utils'
 
+
+const getUniqueGenres = (books) => {
+  const genres = new Set()
+  books.data?.allBooks.forEach(book => {
+    book.genres.forEach(genre => {
+      if (!genres.has(genre)) {
+        genres.add(genre)
+      }
+    })
+  })
+  return [...genres]
+}
 
 const Books = (props) => {
+  const client = useApolloClient()
   const [filter, setFilter] = useState(false)
-  const genres = useQuery(ALL_GENRES)
   const allBooks = useQuery(ALL_BOOKS)
   const [getFilteredBooks, filteredBooks] = useLazyQuery(ALL_BOOKS, {
     fetchPolicy: 'network-only',
+  })
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded
+      updateBookCache(client.cache, { query: ALL_BOOKS }, addedBook)
+      window.alert(`A new book has been added: ${addedBook.title}`)
+    }
   })
 
   if (!props.show) {
@@ -46,14 +67,13 @@ const Books = (props) => {
       </table>
       <div>
         <h3>Filter by genre</h3>
-        {genres.data?.allGenres.map((genre) => (
+        {getUniqueGenres(allBooks)?.map((genre) => (
           <button 
             key={genre}
             onClick={() => {
               getFilteredBooks({ variables: { genre } })
               setFilter(true)
               allBooks.refetch()
-              genres.refetch()
             }}
           >
             {genre}
@@ -63,7 +83,6 @@ const Books = (props) => {
         <button onClick={() => {
           setFilter(false)
           allBooks.refetch()
-          genres.refetch()
         }}>
           Reset filter
         </button>

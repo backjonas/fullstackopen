@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 
 import { ALL_BOOKS, ALL_AUTHORS, ADD_BOOK } from '../queries'
+import { updateBookCache } from '../utils'
 
 
 const NewBook = (props) => {
@@ -11,8 +12,11 @@ const NewBook = (props) => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  const [ createPerson ] = useMutation(ADD_BOOK, {
-    refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS } ]
+  const [ createBook ] = useMutation(ADD_BOOK, {
+    refetchQueries: [ { query: ALL_AUTHORS } ],
+    update: (cache, response) => {
+      updateBookCache(cache, { query: ALL_BOOKS }, response.data.addBook)
+    }
   })
 
   if (!props.show) {
@@ -22,7 +26,7 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    createPerson({ variables: { 
+    createBook({ variables: { 
       title, author, published: parseInt(published), genres 
     }})
 
