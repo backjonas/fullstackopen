@@ -39,6 +39,7 @@ const typeDefs = gql`
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    allGenres: [String!]!
     me: User
   }
   
@@ -79,6 +80,7 @@ const resolvers = {
       return Book.find(filter).populate('author')
     },
     allAuthors: async () => Author.find({}),
+    allGenres: async () => Book.find({}).distinct('genres'),
     me: (root, args, context) => context.currentUser
   },
   Author: {
@@ -87,7 +89,7 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
       const currentUser = context.currentUser
       if (!currentUser) {
         throw new AuthenticationError('Not authenticated')
@@ -109,14 +111,13 @@ const resolvers = {
         })
       }
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser
       if (!currentUser) {
         throw new AuthenticationError('Not authenticated')
       }
-
-      const author = Author.findOne({ name: args.name })
-      author.born = args.born
+      const author = await Author.findOne({ name: args.name })
+      author.born = args.setBornTo
 
       try {
         await author.save()
@@ -125,6 +126,7 @@ const resolvers = {
           invalidArgs: args,
         })
       }
+      return author
     },
     createUser: async (root, args) => {
       const user = new User({ ...args })
@@ -173,7 +175,7 @@ const server = new ApolloServer({
       const decodedToken = jwt.verify(
         auth.substring(7), JWT_SECRET
       )
-      const currentUser = await User.findById(decodedToken.id).populate('friends')
+      const currentUser = await User.findById(decodedToken.id)
       return { currentUser }
     }
   }
